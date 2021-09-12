@@ -1,5 +1,5 @@
 #from application import app_settings as config
-from application.dash.app import app
+from application.dash.app import app, server
 from application.dash.components.layouts.layout import make_layout
 
 app.layout = make_layout()
