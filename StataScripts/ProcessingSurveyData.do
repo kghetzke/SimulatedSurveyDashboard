@@ -11,7 +11,7 @@
 		* 2.2 -> Recode survey questions as dichotomous nets to take means for summary stats
 		* 2.3 -> Collapse weighted means into the various sub-audiences we'll want to display in the dashboard
 
-use "SimulatedSurveyData.dta", clear	
+use "application\dash\assets\StataFiles\SimulatedSurveyData.dta", clear
 	
 ***************************************
 * PART ONE: Weighting the Survey Data *
@@ -118,7 +118,7 @@ la var Q2_N "N-Answering Q2"
 
 *** Save the Processed File ***
 
-save "ProcessedSurveyData.dta", replace
+save "application\dash\assets\StataFiles\ProcessedSurveyData.dta", replace
 
 
 
