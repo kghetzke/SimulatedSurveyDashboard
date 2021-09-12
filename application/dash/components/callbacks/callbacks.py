@@ -6,7 +6,7 @@ from datetime import datetime
 import pandas as pd
 import plotly.express as px
 import dash_core_components as dcc
-
+import application.app_settings as config
 from application.dash.components.datasteps import get_data, get_meta
 
 #New Callbacks:
@@ -23,7 +23,7 @@ def render_dropdowns(series_logic):
     df = pd.read_json(series_logic)
     dummy_count = len(df)
     dynamic_dropdowns =     [html.Div(children = [
-        html.Div('Series '+str(k+1), style = {'width': "25%", 'color':"#000000"}),
+        html.Div('Series '+str(k+1), style = {'width': "25%", 'color':config.FONT_COLOR_ALPHA}),
         dcc.Dropdown(id = {'type': 'alpha', 'index': k}, options=[{'label': vars[i], 'value': i} for i in list(vars.keys())[3:]], 
                      multi = False, value=df['alpha'][k], style={'width': "95%"}),
         dcc.Dropdown(id = {'type': 'beta', 'index': k}, options=[{'label': vals['company'][i], 'value': i} for i in vals['company']], 
@@ -115,11 +115,11 @@ def download_data(n_clicks, df_json):
 #Take the DF Stored in Memory and Download a Powerpoint.pptx file
 #I need to read the df_memory in State(), not Input() otherwise I'll trigger a download every time the user updates the dropdowns
 @app.callback(
-    [Output(component_id= "download_csv", component_property = "data")],
-    [Input("download_data_button", "n_clicks",)],
+    [Output(component_id= "download_pptx", component_property = "data")],
+    [Input("download_pptx_button", "value",)],
     [State("df_memory","data")],
     prevent_initial_call = True,
     )
-def download_data(n_clicks, df_json):
+def download_data(file, df_json):
     dndf = pd.read_json(df_json)
     return [dcc.send_data_frame(dndf.to_csv, "data.csv", index=False)]

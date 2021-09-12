@@ -11,3 +11,4 @@ app = dash.Dash(
         suppress_callback_exceptions=True
         #url_base_pathname = config.URL_BASE_PATHNAME
 )
+server = app.server
