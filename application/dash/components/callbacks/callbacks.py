@@ -23,7 +23,7 @@ def render_dropdowns(series_logic):
     df = pd.read_json(series_logic)
     dummy_count = len(df)
     dynamic_dropdowns =     [html.Div(children = [
-        html.Div('Series '+str(k+1), style = {'width': "25%", 'color':config.FONT_COLOR_ALPHA}),
+        html.Div('Series '+str(k+1), style = {'width': "25%"}),
         dcc.Dropdown(id = {'type': 'alpha', 'index': k}, options=[{'label': vars[i], 'value': i} for i in list(vars.keys())[3:]], 
                      multi = False, value=df['alpha'][k], style={'width': "95%"}),
         dcc.Dropdown(id = {'type': 'beta', 'index': k}, options=[{'label': vals['company'][i], 'value': i} for i in vals['company']], 
