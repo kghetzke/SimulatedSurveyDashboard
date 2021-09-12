@@ -6,4 +6,4 @@ app.layout = make_layout()
 
 if __name__ == '__main__':
     # app.run_server(host='localhost', port=config.PORT, debug=True)
-    app.run_server(host='localhost', debug=True)
+    app.run_server(debug=True)
