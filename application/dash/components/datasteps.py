@@ -17,3 +17,10 @@ def get_meta(file = datafile):
     dm_vars = meta_data.variable_labels()
     dm_vals = meta_data.value_labels()
     return dm_vars, dm_vals
+
+if __name__=='__main__':
+    df = get_data()
+    print(df.head())
+    vars, vals = get_meta()
+    
+    

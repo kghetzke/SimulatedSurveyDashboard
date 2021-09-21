@@ -119,7 +119,7 @@ def update_graph(logic_json):
     
     # return the figure (which will be sent to the 'my_graph' placeholder via the callback) 
     # and the graph_df as json (which will be sent to the "df_memory" dcc.store() object)
-    return [fig, graph_df[['Series','Month','Company','Audience','Metric','Value']].to_json()]
+    return [fig, graph_df[['Series','month','Month','Company','Audience','Metric','Value']].to_json()]
 
 
 #Download the df stored in memory when clicking the download button
@@ -145,8 +145,9 @@ def download_data(n_clicks, df_json):
 def download_pptx(file, df_json):
     """This uses the py-pptx package to create a presentation object from an existing presentation, swap data in chart, the save in an ioBytes object to download"""
     dndf = pd.read_json(df_json)
-    ndf = dndf[['Series','Month','Value']]
-    ndf = ndf.pivot(index='Month',columns = 'Series',values='Value')
+    ndf = dndf[['Series','month','Value']]
+    ndf = ndf.pivot(index='month',columns = 'Series',values='Value')
+    ndf.index = ['January','February','March','April','May','June','July','August','September','October','November','December']
     prs = Presentation('application/dash/assets/PowerpointTemplates/' + file)
     dataframe_to_chart(find_shape(prs.slides[1],6).chart,ndf)
     file_obj = io.BytesIO()
