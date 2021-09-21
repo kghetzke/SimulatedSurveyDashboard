@@ -12,6 +12,7 @@ from application.dash.components.datasteps import get_data, get_meta
 from pptx import Presentation
 from pptx.chart.data import CategoryChartData
 from pptx.chart.chart import Chart
+import io
 
 """Some helper functions for using powerpoint - maybe I should wrap these somewhere else?"""
 # Function to put a data-frame in a chart 
@@ -151,6 +152,8 @@ def download_data(file, df_json):
     ndf = ndf.pivot(index='Month',columns = 'Series',values='Value')
     prs = Presentation('application/dash/assets/PowerpointTemplates/' + file)
     dataframe_to_chart(find_shape(prs.slides[1],6).chart,ndf)
-    prs.save('application/dash/assets/PowerpointTemplates/TempFiles/Data.pptx')
+    file_obj = io.BytesIO()
+    prs.save(file_obj)
+    file_obj.seek(0)
     # return [dcc.send_data_frame(ndf.to_csv, "data.csv", index=True)]
-    return [dcc.send_file('application/dash/assets/PowerpointTemplates/TempFiles/Data.pptx')]
+    return [dcc.send_bytes(file_obj.read(), "DataChart.pptx")]
