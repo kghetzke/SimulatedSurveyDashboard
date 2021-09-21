@@ -9,6 +9,29 @@ import dash_core_components as dcc
 import application.app_settings as config
 from application.dash.components.datasteps import get_data, get_meta
 
+from pptx import Presentation
+from pptx.chart.data import CategoryChartData
+from pptx.chart.chart import Chart
+
+"""Some helper functions for using powerpoint - maybe I should wrap these somewhere else?"""
+# Function to put a data-frame in a chart 
+
+def find_shape(slide, shape_id):
+    for shape in slide.shapes:
+        if shape.shape_id == shape_id:
+            return shape
+
+# I want to make this better by clarifying what classes each of these objects need to be, and maybe some extra code to confirm that rows/columns of data-frame are strings
+def dataframe_to_chart(chart, df, format = '0%;0%'):
+    chart_data = CategoryChartData(number_format = format)
+    chart_data.categories = df.index
+    for srs in df.columns:
+        chart_data.add_series(srs, df[srs])
+    chart.replace_data(chart_data)
+
+
+
+
 #New Callbacks:
 #First, load the data in memory using my fetch_data functions in the datasteps.py script
 df = get_data()
@@ -75,6 +98,7 @@ def update_graph(logic_json):
     graph_df = graph_df.rename(columns = {logic_df['alpha'][0]: 'Value'})
     #graph_df = graph_df.dropna(subset = ['Value'], inplace=True)
     graph_df['Series'] = 'Series 1'
+    graph_df['Series_Idx'] = 1
     graph_df['Metric'] = logic_df['alpha'][0]
 
     if dummy_count>1:
@@ -83,6 +107,7 @@ def update_graph(logic_json):
             new_rows = new_rows.rename(columns = {logic_df['alpha'][i]: 'Value'})
             #new_rows = new_rows.dropna(subset = ['Value'], inplace=True)
             new_rows['Series'] = 'Series ' + str(i+1)
+            new_rows['Series_Idx'] = i+1
             new_rows['Metric'] = logic_df['alpha'][i]
             graph_df = graph_df.append(new_rows).reset_index(drop = True)
     
@@ -97,7 +122,7 @@ def update_graph(logic_json):
     
     # return the figure (which will be sent to the 'my_graph' placeholder via the callback) 
     # and the df_dwnld as json (which will be sent to the "df_memory" dcc.store() object)
-    return [fig, graph_df[['Month','Company','Audience','Metric','Value']].to_json()]
+    return [fig, graph_df[['Series','Month','Company','Audience','Metric','Value']].to_json()]
 
 
 #Download the df stored in memory when clicking the download button
@@ -122,4 +147,10 @@ def download_data(n_clicks, df_json):
     )
 def download_data(file, df_json):
     dndf = pd.read_json(df_json)
-    return [dcc.send_data_frame(dndf.to_csv, "data.csv", index=False)]
+    ndf = dndf[['Series','Month','Value']]
+    ndf = ndf.pivot(index='Month',columns = 'Series',values='Value')
+    prs = Presentation('application/dash/assets/PowerpointTemplates/' + file)
+    dataframe_to_chart(find_shape(prs.slides[1],6).chart,ndf)
+    prs.save('application/dash/assets/PowerpointTemplates/TempFiles/Data.pptx')
+    # return [dcc.send_data_frame(ndf.to_csv, "data.csv", index=True)]
+    return [dcc.send_file('application/dash/assets/PowerpointTemplates/TempFiles/Data.pptx')]

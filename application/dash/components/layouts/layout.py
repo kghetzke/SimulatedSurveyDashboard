@@ -40,12 +40,12 @@ add_series_button = html.Div([html.Button("Add Series", id="add_button")])
 ### Download Data Buttons ###
 
 download_data_button = html.Div([html.Button("Download CSV", id="download_data_button"), dcc.Download(id="download_csv")],style={'width': "15%"})
-pptx_templates = [file[44:] for file in glob.glob('application/dash/assets/PowerpointTemplates/*.pptx')]
 
 # Fill the download-powerpoint dropdown menu with options from all the .pptx files in the templates folder
+pptx_templates = [file[44:] for file in glob.glob('application/dash/assets/PowerpointTemplates/*.pptx')]
 download_pptx_button = html.Div([html.Div('Download PPTX from Template', style = {'width': "95%"}), 
     dcc.Dropdown(id="download_pptx_button", 
-    options = [{'label': template, 'value': idx} for idx, template in enumerate(pptx_templates)], 
+    options = [{'label': template, 'value': template} for idx, template in enumerate(pptx_templates)], 
     value = None, style = {'width': '35%'}),
     dcc.Download(id="download_pptx")])
 
