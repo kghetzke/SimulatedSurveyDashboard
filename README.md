@@ -1,5 +1,7 @@
 # SimulatedSurveyDashboard
 
+## WORK IN PROGRESS - Some functions (notably powerpoint downloads) are not fully built out
+
 I'm publishing this repository to highlight my skills as a Python developer and STATA user. The final app is hosted by Heroku, and can be explored [here](https://tracker-survey-dashboard.herokuapp.com/)
 
 First, the script-file SimululatingSurveyData.do in the StataScripts folder shows how I used STATA to simulate 12 months of survey data for 5 fictional companies.
