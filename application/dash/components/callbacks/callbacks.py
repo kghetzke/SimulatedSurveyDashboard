@@ -14,16 +14,18 @@ from pptx.chart.data import CategoryChartData
 from pptx.chart.chart import Chart
 import io
 
-"""Some helper functions for using powerpoint - maybe I should wrap these somewhere else?"""
-# Function to put a data-frame in a chart 
-
+"""Some helper functions for using powerpoint -> 
+    I wrote these to make better use of the Python-pptx package
+"""
 def find_shape(slide, shape_id):
     for shape in slide.shapes:
         if shape.shape_id == shape_id:
             return shape
 
-# I want to make this better by clarifying what classes each of these objects need to be, and maybe some extra code to confirm that rows/columns of data-frame are strings
 def dataframe_to_chart(chart, df, format = '0%;0%'):
+    """ This replaces data in an exisiting powerpoint chart object with a pandas dataframe
+        It is necessary to have the row-indices and column names be strings; 
+    """
     chart_data = CategoryChartData(number_format = format)
     chart_data.categories = df.index
     for srs in df.columns:
@@ -111,18 +113,12 @@ def update_graph(logic_json):
             new_rows['Series_Idx'] = i+1
             new_rows['Metric'] = logic_df['alpha'][i]
             graph_df = graph_df.append(new_rows).reset_index(drop = True)
-    
-
-
-    #write some code to make a labeling dictionary
-    #label_dict = {dim: vars[dim], "survey": "survey wave"}
 
     # render the figure using plotly-express library
-    #fig = px.line(graph_df, x="Survey", y='Value', color='Series', markers = True, labels = {'Value': 'Value (% as decimal)'})
     fig = px.line(graph_df, x="Month", y='Value', color='Series', labels = {'Value': 'Value (% as decimal)'})
     
     # return the figure (which will be sent to the 'my_graph' placeholder via the callback) 
-    # and the df_dwnld as json (which will be sent to the "df_memory" dcc.store() object)
+    # and the graph_df as json (which will be sent to the "df_memory" dcc.store() object)
     return [fig, graph_df[['Series','Month','Company','Audience','Metric','Value']].to_json()]
 
 
@@ -146,7 +142,8 @@ def download_data(n_clicks, df_json):
     [State("df_memory","data")],
     prevent_initial_call = True,
     )
-def download_data(file, df_json):
+def download_pptx(file, df_json):
+    """This uses the py-pptx package to create a presentation object from an existing presentation, swap data in chart, the save in an ioBytes object to download"""
     dndf = pd.read_json(df_json)
     ndf = dndf[['Series','Month','Value']]
     ndf = ndf.pivot(index='Month',columns = 'Series',values='Value')
@@ -155,5 +152,4 @@ def download_data(file, df_json):
     file_obj = io.BytesIO()
     prs.save(file_obj)
     file_obj.seek(0)
-    # return [dcc.send_data_frame(ndf.to_csv, "data.csv", index=True)]
     return [dcc.send_bytes(file_obj.read(), "DataChart.pptx")]
